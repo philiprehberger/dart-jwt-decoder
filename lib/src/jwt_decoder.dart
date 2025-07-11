@@ -84,6 +84,29 @@ class JwtDecoder {
     return header['alg'] as String?;
   }
 
+  /// Check if a [token] has valid JWT structure.
+  ///
+  /// Returns `true` if the token has exactly 3 dot-separated parts and
+  /// each part is valid base64url. This does NOT verify the signature
+  /// or validate any claims.
+  static bool isValid(String token) {
+    final parts = token.split('.');
+    if (parts.length != 3) return false;
+
+    for (final part in parts) {
+      if (part.isEmpty) return false;
+      if (!_isBase64Url(part)) return false;
+    }
+
+    return true;
+  }
+
+  static bool _isBase64Url(String input) {
+    // Base64url alphabet: A-Z, a-z, 0-9, -, _
+    // Padding (=) may or may not be present
+    return RegExp(r'^[A-Za-z0-9\-_]+=*$').hasMatch(input);
+  }
+
   static String _decodeBase64(String input) {
     // Add padding if necessary
     var normalized = input.replaceAll('-', '+').replaceAll('_', '/');

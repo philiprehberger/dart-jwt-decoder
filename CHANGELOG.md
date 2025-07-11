@@ -1,3 +1,8 @@
+## [0.3.0] - 2026-04-05
+
+### Added
+- `JwtDecoder.isValid()` for checking JWT structure without decoding or verifying signatures
+
 ## [0.2.0] - 2026-04-04
 
 ### Added

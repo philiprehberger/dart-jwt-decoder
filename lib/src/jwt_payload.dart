@@ -21,6 +21,9 @@ class JwtPayload {
   /// The `aud` (audience) claim.
   String? get audience => claims['aud'] as String?;
 
+  /// The `jti` (JWT ID) claim.
+  String? get jwtId => claims['jti'] as String?;
+
   /// The `iat` (issued at) claim as a [DateTime].
   DateTime? get issuedAt {
     final iat = claims['iat'];

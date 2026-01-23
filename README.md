@@ -16,7 +16,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  philiprehberger_jwt_decoder: ^0.3.0
+  philiprehberger_jwt_decoder: ^0.4.0
 ```
 
 Then run:
@@ -72,6 +72,18 @@ print(header['typ']); // "JWT"
 final alg = JwtDecoder.algorithm(token); // "HS256"
 ```
 
+### Safe Decoding
+
+```dart
+// Returns null instead of throwing on malformed tokens
+final payload = JwtDecoder.tryDecode(token);
+if (payload != null) {
+  print(payload.subject);
+}
+
+final header = JwtDecoder.tryDecodeHeader(token);
+```
+
 ### Custom Claims
 
 ```dart
@@ -85,15 +97,20 @@ final level = payload.claim<int>('level');      // 5
 | Method | Description |
 |--------|-------------|
 | `JwtDecoder.decode(token)` | Decode a JWT and return its payload |
+| `JwtDecoder.tryDecode(token)` | Decode a JWT, or return `null` if malformed |
 | `JwtDecoder.decodeHeader(token)` | Decode the JWT header and return the claims map |
+| `JwtDecoder.tryDecodeHeader(token)` | Decode the JWT header, or return `null` if malformed |
 | `JwtDecoder.algorithm(token)` | Get the `alg` claim from the header |
 | `JwtDecoder.isValid(token)` | Check if a token has valid JWT structure |
 | `JwtDecoder.isExpired(token, {clockSkew})` | Check if a token has expired |
 | `JwtDecoder.timeToExpiry(token)` | Get remaining time until expiration |
 | `JwtPayload.subject` | The `sub` claim |
+| `JwtPayload.issuer` | The `iss` claim |
+| `JwtPayload.audience` | The `aud` claim |
+| `JwtPayload.jwtId` | The `jti` claim |
 | `JwtPayload.issuedAt` | The `iat` claim as DateTime |
 | `JwtPayload.expiration` | The `exp` claim as DateTime |
-| `JwtPayload.issuer` | The `iss` claim |
+| `JwtPayload.notBefore` | The `nbf` claim as DateTime |
 | `JwtPayload.claim<T>(key)` | Get any custom claim by key |
 
 ## Development

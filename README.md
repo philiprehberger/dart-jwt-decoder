@@ -16,7 +16,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  philiprehberger_jwt_decoder: ^0.1.0
+  philiprehberger_jwt_decoder: ^0.1.1
 ```
 
 Then run:

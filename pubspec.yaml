@@ -1,0 +1,13 @@
+name: philiprehberger_jwt_decoder
+description: Lightweight JWT token decoder with typed claim access and expiration checking
+version: 0.1.0
+homepage: https://github.com/philiprehberger/dart-jwt-decoder
+repository: https://github.com/philiprehberger/dart-jwt-decoder
+issue_tracker: https://github.com/philiprehberger/dart-jwt-decoder/issues
+
+environment:
+  sdk: ^3.6.0
+
+dev_dependencies:
+  test: ^1.25.0
+  lints: ^5.0.0

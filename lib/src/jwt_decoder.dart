@@ -56,6 +56,34 @@ class JwtDecoder {
     return exp.difference(DateTime.now().toUtc());
   }
 
+  /// Decodes the JWT header and returns the claims map.
+  ///
+  /// Throws [FormatException] if the token is malformed.
+  static Map<String, dynamic> decodeHeader(String token) {
+    final parts = token.split('.');
+    if (parts.length != 3) {
+      throw FormatException(
+          'Invalid JWT: expected 3 parts, got ${parts.length}');
+    }
+
+    final header = _decodeBase64(parts[0]);
+    final json = jsonDecode(header);
+
+    if (json is! Map<String, dynamic>) {
+      throw const FormatException('Invalid JWT: header is not a JSON object');
+    }
+
+    return json;
+  }
+
+  /// Returns the algorithm from the JWT header (the `alg` claim).
+  ///
+  /// Returns `null` if the `alg` claim is not present.
+  static String? algorithm(String token) {
+    final header = decodeHeader(token);
+    return header['alg'] as String?;
+  }
+
   static String _decodeBase64(String input) {
     // Add padding if necessary
     var normalized = input.replaceAll('-', '+').replaceAll('_', '/');

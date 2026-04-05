@@ -94,4 +94,34 @@ void main() {
       expect(JwtDecoder.isExpired(token), isTrue);
     });
   });
+
+  group('decodeHeader', () {
+    test('extracts algorithm from header', () {
+      // Standard JWT with {"alg":"HS256","typ":"JWT"} header
+      final token =
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U';
+      final header = JwtDecoder.decodeHeader(token);
+      expect(header['alg'], 'HS256');
+      expect(header['typ'], 'JWT');
+    });
+
+    test('throws on malformed token', () {
+      expect(() => JwtDecoder.decodeHeader('not-a-jwt'), throwsFormatException);
+    });
+  });
+
+  group('algorithm', () {
+    test('returns algorithm string', () {
+      final token =
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U';
+      expect(JwtDecoder.algorithm(token), 'HS256');
+    });
+
+    test('returns null when alg is missing', () {
+      // Header: {"typ":"JWT"} = eyJ0eXAiOiJKV1QifQ
+      final token =
+          'eyJ0eXAiOiJKV1QifQ.eyJzdWIiOiIxMjM0NTY3ODkwIn0.signature';
+      expect(JwtDecoder.algorithm(token), isNull);
+    });
+  });
 }

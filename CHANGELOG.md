@@ -1,3 +1,9 @@
+## [0.2.0] - 2026-04-04
+
+### Added
+- `JwtDecoder.decodeHeader()` for extracting JWT header claims
+- `JwtDecoder.algorithm()` convenience method for the `alg` claim
+
 ## [0.1.1] - 2026-04-03
 
 ### Fixed

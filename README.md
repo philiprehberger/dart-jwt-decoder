@@ -16,7 +16,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  philiprehberger_jwt_decoder: ^0.1.1
+  philiprehberger_jwt_decoder: ^0.2.0
 ```
 
 Then run:
@@ -52,6 +52,18 @@ print('Expires in ${remaining?.inMinutes} minutes');
 JwtDecoder.isExpired(token, clockSkew: Duration(seconds: 30));
 ```
 
+### Header Inspection
+
+```dart
+import 'package:philiprehberger_jwt_decoder/philiprehberger_jwt_decoder.dart';
+
+final header = JwtDecoder.decodeHeader(token);
+print(header['alg']); // "HS256"
+print(header['typ']); // "JWT"
+
+final alg = JwtDecoder.algorithm(token); // "HS256"
+```
+
 ### Custom Claims
 
 ```dart
@@ -65,6 +77,8 @@ final level = payload.claim<int>('level');      // 5
 | Method | Description |
 |--------|-------------|
 | `JwtDecoder.decode(token)` | Decode a JWT and return its payload |
+| `JwtDecoder.decodeHeader(token)` | Decode the JWT header and return the claims map |
+| `JwtDecoder.algorithm(token)` | Get the `alg` claim from the header |
 | `JwtDecoder.isExpired(token, {clockSkew})` | Check if a token has expired |
 | `JwtDecoder.timeToExpiry(token)` | Get remaining time until expiration |
 | `JwtPayload.subject` | The `sub` claim |

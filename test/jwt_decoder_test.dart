@@ -93,6 +93,30 @@ void main() {
       final token = _createToken({'sub': 'user'});
       expect(JwtDecoder.isExpired(token), isTrue);
     });
+
+    test('tryDecode returns payload for valid token', () {
+      final token = _createToken({'sub': 'user-123'});
+      final payload = JwtDecoder.tryDecode(token);
+      expect(payload, isNotNull);
+      expect(payload!.subject, equals('user-123'));
+    });
+
+    test('tryDecode returns null for malformed token', () {
+      expect(JwtDecoder.tryDecode('not-a-jwt'), isNull);
+      expect(JwtDecoder.tryDecode('a.b'), isNull);
+    });
+
+    test('tryDecodeHeader returns header for valid token', () {
+      final token =
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U';
+      final header = JwtDecoder.tryDecodeHeader(token);
+      expect(header, isNotNull);
+      expect(header!['alg'], 'HS256');
+    });
+
+    test('tryDecodeHeader returns null for malformed token', () {
+      expect(JwtDecoder.tryDecodeHeader('not-a-jwt'), isNull);
+    });
   });
 
   group('decodeHeader', () {
@@ -122,6 +146,20 @@ void main() {
       final token =
           'eyJ0eXAiOiJKV1QifQ.eyJzdWIiOiIxMjM0NTY3ODkwIn0.signature';
       expect(JwtDecoder.algorithm(token), isNull);
+    });
+  });
+
+  group('JwtPayload.jwtId', () {
+    test('returns jti claim when present', () {
+      final token = _createToken({'jti': 'abc-123'});
+      final payload = JwtDecoder.decode(token);
+      expect(payload.jwtId, equals('abc-123'));
+    });
+
+    test('returns null when jti is absent', () {
+      final token = _createToken({'sub': 'user'});
+      final payload = JwtDecoder.decode(token);
+      expect(payload.jwtId, isNull);
     });
   });
 }

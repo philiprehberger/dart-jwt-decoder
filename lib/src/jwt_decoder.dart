@@ -34,6 +34,15 @@ class JwtDecoder {
     return JwtPayload(json);
   }
 
+  /// Decode a JWT [token] and return its payload, or `null` if malformed.
+  static JwtPayload? tryDecode(String token) {
+    try {
+      return decode(token);
+    } on FormatException {
+      return null;
+    }
+  }
+
   /// Check if a JWT [token] has expired.
   ///
   /// Returns `true` if the token has no `exp` claim.
@@ -74,6 +83,15 @@ class JwtDecoder {
     }
 
     return json;
+  }
+
+  /// Decode the JWT header, or return `null` if malformed.
+  static Map<String, dynamic>? tryDecodeHeader(String token) {
+    try {
+      return decodeHeader(token);
+    } on FormatException {
+      return null;
+    }
   }
 
   /// Returns the algorithm from the JWT header (the `alg` claim).

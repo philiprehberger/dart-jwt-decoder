@@ -21,6 +21,17 @@ class JwtPayload {
   /// The `aud` (audience) claim.
   String? get audience => claims['aud'] as String?;
 
+  /// The `aud` (audience) claim as a list.
+  ///
+  /// Per RFC 7519, the `aud` claim may be a single string or an array.
+  /// This getter always returns a list for uniform access.
+  List<String> get audienceList {
+    final aud = claims['aud'];
+    if (aud is String) return [aud];
+    if (aud is List) return aud.cast<String>();
+    return [];
+  }
+
   /// The `jti` (JWT ID) claim.
   String? get jwtId => claims['jti'] as String?;
 

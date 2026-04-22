@@ -162,4 +162,59 @@ void main() {
       expect(payload.jwtId, isNull);
     });
   });
+
+  group('JwtPayload.audienceList', () {
+    test('returns single-element list for string audience', () {
+      final token = _createToken({'aud': 'my-app'});
+      final payload = JwtDecoder.decode(token);
+      expect(payload.audienceList, equals(['my-app']));
+    });
+
+    test('returns list for array audience', () {
+      final token = _createToken({'aud': ['app-1', 'app-2']});
+      final payload = JwtDecoder.decode(token);
+      expect(payload.audienceList, equals(['app-1', 'app-2']));
+    });
+
+    test('returns empty list when no audience', () {
+      final token = _createToken({'sub': 'user'});
+      final payload = JwtDecoder.decode(token);
+      expect(payload.audienceList, isEmpty);
+    });
+  });
+
+  group('JwtDecoder.isNotYetValid', () {
+    test('returns false when no nbf claim', () {
+      final token = _createToken({'sub': 'user'});
+      expect(JwtDecoder.isNotYetValid(token), isFalse);
+    });
+
+    test('returns true for future nbf', () {
+      final future = DateTime.now().toUtc().add(Duration(hours: 1));
+      final token = _createToken({
+        'nbf': future.millisecondsSinceEpoch ~/ 1000,
+      });
+      expect(JwtDecoder.isNotYetValid(token), isTrue);
+    });
+
+    test('returns false for past nbf', () {
+      final past = DateTime.now().toUtc().subtract(Duration(hours: 1));
+      final token = _createToken({
+        'nbf': past.millisecondsSinceEpoch ~/ 1000,
+      });
+      expect(JwtDecoder.isNotYetValid(token), isFalse);
+    });
+
+    test('respects clock skew', () {
+      final slightlyFuture = DateTime.now().toUtc().add(Duration(seconds: 10));
+      final token = _createToken({
+        'nbf': slightlyFuture.millisecondsSinceEpoch ~/ 1000,
+      });
+      expect(JwtDecoder.isNotYetValid(token), isTrue);
+      expect(
+        JwtDecoder.isNotYetValid(token, clockSkew: Duration(seconds: 30)),
+        isFalse,
+      );
+    });
+  });
 }

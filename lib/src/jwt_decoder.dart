@@ -65,6 +65,17 @@ class JwtDecoder {
     return exp.difference(DateTime.now().toUtc());
   }
 
+  /// Check if a JWT [token] is not yet valid based on the `nbf` claim.
+  ///
+  /// Returns `false` if the token has no `nbf` claim (considered valid).
+  /// Optionally provide [clockSkew] to allow for clock drift.
+  static bool isNotYetValid(String token, {Duration clockSkew = Duration.zero}) {
+    final payload = decode(token);
+    final nbf = payload.notBefore;
+    if (nbf == null) return false;
+    return DateTime.now().toUtc().isBefore(nbf.subtract(clockSkew));
+  }
+
   /// Decodes the JWT header and returns the claims map.
   ///
   /// Throws [FormatException] if the token is malformed.

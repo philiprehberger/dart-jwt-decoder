@@ -16,7 +16,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  philiprehberger_jwt_decoder: ^0.4.0
+  philiprehberger_jwt_decoder: ^0.5.0
 ```
 
 Then run:
@@ -92,6 +92,25 @@ final role = payload.claim<String>('role');     // 'admin'
 final level = payload.claim<int>('level');      // 5
 ```
 
+### Audience (RFC 7519)
+
+```dart
+final payload = JwtDecoder.decode(token);
+// Always returns a list, whether aud is a string or array
+final audiences = payload.audienceList; // ['app-1', 'app-2']
+```
+
+### Not-Before Validation
+
+```dart
+if (JwtDecoder.isNotYetValid(token)) {
+  print('Token is not yet valid');
+}
+
+// With clock skew tolerance
+JwtDecoder.isNotYetValid(token, clockSkew: Duration(seconds: 30));
+```
+
 ## API
 
 | Method | Description |
@@ -111,6 +130,8 @@ final level = payload.claim<int>('level');      // 5
 | `JwtPayload.issuedAt` | The `iat` claim as DateTime |
 | `JwtPayload.expiration` | The `exp` claim as DateTime |
 | `JwtPayload.notBefore` | The `nbf` claim as DateTime |
+| `JwtPayload.audienceList` | The `aud` claim as a list (handles both string and array) |
+| `JwtDecoder.isNotYetValid(token, {clockSkew})` | Check if a token's `nbf` claim is in the future |
 | `JwtPayload.claim<T>(key)` | Get any custom claim by key |
 
 ## Development

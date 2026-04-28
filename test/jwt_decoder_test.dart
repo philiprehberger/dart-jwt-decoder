@@ -183,6 +183,55 @@ void main() {
     });
   });
 
+  group('JwtPayload.claimOr', () {
+    test('returns claim value when present and correctly typed', () {
+      final token = _createToken({'role': 'admin', 'level': 5});
+      final payload = JwtDecoder.decode(token);
+      expect(payload.claimOr<String>('role', 'guest'), equals('admin'));
+      expect(payload.claimOr<int>('level', 0), equals(5));
+    });
+
+    test('returns defaultValue when claim is missing', () {
+      final token = _createToken({'sub': 'user'});
+      final payload = JwtDecoder.decode(token);
+      expect(payload.claimOr<String>('role', 'guest'), equals('guest'));
+      expect(payload.claimOr<int>('level', 0), equals(0));
+    });
+
+    test('returns defaultValue when claim type does not match', () {
+      // 'level' is a String, but we ask for int — falls back to defaultValue.
+      final token = _createToken({'level': 'five'});
+      final payload = JwtDecoder.decode(token);
+      expect(payload.claimOr<int>('level', 0), equals(0));
+    });
+  });
+
+  group('JwtPayload.pickClaims', () {
+    test('returns subset map with only present keys', () {
+      final token = _createToken({
+        'sub': 'user-123',
+        'role': 'admin',
+        'tenant': 'acme',
+      });
+      final payload = JwtDecoder.decode(token);
+      final subset = payload.pickClaims(['sub', 'role', 'missing']);
+      expect(subset, equals({'sub': 'user-123', 'role': 'admin'}));
+      expect(subset.containsKey('missing'), isFalse);
+    });
+
+    test('returns empty map when no keys are present', () {
+      final token = _createToken({'sub': 'user'});
+      final payload = JwtDecoder.decode(token);
+      expect(payload.pickClaims(['role', 'tenant']), isEmpty);
+    });
+
+    test('returns empty map for empty key list', () {
+      final token = _createToken({'sub': 'user'});
+      final payload = JwtDecoder.decode(token);
+      expect(payload.pickClaims([]), isEmpty);
+    });
+  });
+
   group('JwtDecoder.isNotYetValid', () {
     test('returns false when no nbf claim', () {
       final token = _createToken({'sub': 'user'});

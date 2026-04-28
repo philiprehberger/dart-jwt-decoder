@@ -16,7 +16,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  philiprehberger_jwt_decoder: ^0.5.0
+  philiprehberger_jwt_decoder: ^0.6.0
 ```
 
 Then run:
@@ -92,6 +92,24 @@ final role = payload.claim<String>('role');     // 'admin'
 final level = payload.claim<int>('level');      // 5
 ```
 
+### Default Claim Values
+
+```dart
+final payload = JwtDecoder.decode(token);
+// Returns the claim value if present and typed, otherwise the default.
+final role = payload.claimOr<String>('role', 'guest');
+final level = payload.claimOr<int>('level', 0);
+```
+
+### Batch Claims
+
+```dart
+final payload = JwtDecoder.decode(token);
+// Pick a subset of claims; missing keys are skipped (not inserted as null).
+final subset = payload.pickClaims(['sub', 'role', 'tenant']);
+// {'sub': 'user-123', 'role': 'admin'}
+```
+
 ### Audience (RFC 7519)
 
 ```dart
@@ -133,6 +151,8 @@ JwtDecoder.isNotYetValid(token, clockSkew: Duration(seconds: 30));
 | `JwtPayload.audienceList` | The `aud` claim as a list (handles both string and array) |
 | `JwtDecoder.isNotYetValid(token, {clockSkew})` | Check if a token's `nbf` claim is in the future |
 | `JwtPayload.claim<T>(key)` | Get any custom claim by key |
+| `JwtPayload.claimOr<T>(key, defaultValue)` | Get a typed custom claim, or `defaultValue` if absent or mistyped |
+| `JwtPayload.pickClaims(keys)` | Get a subset map containing only the requested keys that are present |
 
 ## Development
 

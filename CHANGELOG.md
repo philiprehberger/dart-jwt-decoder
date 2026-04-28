@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-04-28
+
+### Added
+- `JwtPayload.claimOr<T>(key, defaultValue)` for typed claim access with a fallback when the claim is absent or the type does not match
+- `JwtPayload.pickClaims(keys)` for extracting a subset map of only the requested claims that are present
+
 ## [0.5.0] - 2026-04-17
 
 ### Added

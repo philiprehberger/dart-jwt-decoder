@@ -65,6 +65,34 @@ class JwtPayload {
     return null;
   }
 
+  /// Get a custom claim by [key], cast to type [T], or [defaultValue] if
+  /// the claim is absent or cannot be cast to [T].
+  ///
+  /// ```dart
+  /// final role = payload.claimOr<String>('role', 'guest');
+  /// final level = payload.claimOr<int>('level', 0);
+  /// ```
+  T claimOr<T>(String key, T defaultValue) {
+    final value = claim<T>(key);
+    return value ?? defaultValue;
+  }
+
+  /// Returns a map containing only the requested [keys] that are present
+  /// in the payload.
+  ///
+  /// Missing keys are skipped (not inserted as `null`).
+  ///
+  /// ```dart
+  /// final subset = payload.pickClaims(['sub', 'role', 'tenant']);
+  /// ```
+  Map<String, dynamic> pickClaims(List<String> keys) {
+    final out = <String, dynamic>{};
+    for (final k in keys) {
+      if (claims.containsKey(k)) out[k] = claims[k];
+    }
+    return out;
+  }
+
   @override
   String toString() => 'JwtPayload($claims)';
 }

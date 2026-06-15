@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-06-14
+
+### Added
+- `JwtPayload.scopes` getter for OAuth 2.0 `scope` claim parsing — splits space-separated string per RFC 8693, falls back to `scp` array claim (Azure AD, Auth0)
+
 ## [0.6.0] - 2026-04-28
 
 ### Added

@@ -77,6 +77,29 @@ class JwtPayload {
     return value ?? defaultValue;
   }
 
+  /// The OAuth 2.0 `scope` claim parsed into a list.
+  ///
+  /// Per RFC 8693, `scope` is a single space-separated string. Some
+  /// providers (Azure AD, Auth0) use `scp` as a JSON array instead.
+  /// This getter returns whichever is present, in that order, or an
+  /// empty list if neither claim exists.
+  ///
+  /// ```dart
+  /// // 'scope': 'openid profile email' → ['openid', 'profile', 'email']
+  /// // 'scp': ['openid', 'profile']    → ['openid', 'profile']
+  /// final scopes = payload.scopes;
+  /// ```
+  List<String> get scopes {
+    final scope = claims['scope'];
+    if (scope is String) {
+      if (scope.isEmpty) return const [];
+      return scope.split(' ').where((s) => s.isNotEmpty).toList();
+    }
+    final scp = claims['scp'];
+    if (scp is List) return scp.cast<String>();
+    return const [];
+  }
+
   /// Returns a map containing only the requested [keys] that are present
   /// in the payload.
   ///

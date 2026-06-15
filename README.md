@@ -4,6 +4,8 @@
 [![pub package](https://img.shields.io/pub/v/philiprehberger_jwt_decoder.svg)](https://pub.dev/packages/philiprehberger_jwt_decoder)
 [![Last updated](https://img.shields.io/github/last-commit/philiprehberger/dart-jwt-decoder)](https://github.com/philiprehberger/dart-jwt-decoder/commits/main)
 
+![philiprehberger_jwt_decoder](https://raw.githubusercontent.com/philiprehberger/dart-jwt-decoder/main/package-card.webp)
+
 Lightweight JWT token decoder with typed claim access and expiration checking
 
 ## Requirements
@@ -16,7 +18,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  philiprehberger_jwt_decoder: ^0.6.0
+  philiprehberger_jwt_decoder: ^0.7.0
 ```
 
 Then run:
@@ -118,6 +120,21 @@ final payload = JwtDecoder.decode(token);
 final audiences = payload.audienceList; // ['app-1', 'app-2']
 ```
 
+### OAuth Scopes
+
+The `scopes` getter parses the OAuth 2.0 `scope` claim (space-separated per RFC 8693) into a list. Falls back to the `scp` array claim used by Azure AD and Auth0.
+
+```dart
+final payload = JwtDecoder.decode(token);
+
+// 'scope': 'openid profile email' → ['openid', 'profile', 'email']
+final granted = payload.scopes;
+
+if (granted.contains('openid')) {
+  // ...
+}
+```
+
 ### Not-Before Validation
 
 ```dart
@@ -149,6 +166,7 @@ JwtDecoder.isNotYetValid(token, clockSkew: Duration(seconds: 30));
 | `JwtPayload.expiration` | The `exp` claim as DateTime |
 | `JwtPayload.notBefore` | The `nbf` claim as DateTime |
 | `JwtPayload.audienceList` | The `aud` claim as a list (handles both string and array) |
+| `JwtPayload.scopes` | OAuth 2.0 `scope` claim parsed to list (falls back to `scp` array) |
 | `JwtDecoder.isNotYetValid(token, {clockSkew})` | Check if a token's `nbf` claim is in the future |
 | `JwtPayload.claim<T>(key)` | Get any custom claim by key |
 | `JwtPayload.claimOr<T>(key, defaultValue)` | Get a typed custom claim, or `defaultValue` if absent or mistyped |

@@ -266,4 +266,47 @@ void main() {
       );
     });
   });
+
+  group('scopes', () {
+    test('parses space-separated scope string', () {
+      final token = _createToken({'scope': 'openid profile email'});
+      final payload = JwtDecoder.decode(token);
+      expect(payload.scopes, equals(['openid', 'profile', 'email']));
+    });
+
+    test('falls back to scp array claim', () {
+      final token = _createToken({
+        'scp': ['openid', 'profile'],
+      });
+      final payload = JwtDecoder.decode(token);
+      expect(payload.scopes, equals(['openid', 'profile']));
+    });
+
+    test('prefers scope over scp when both present', () {
+      final token = _createToken({
+        'scope': 'a b',
+        'scp': ['c', 'd'],
+      });
+      final payload = JwtDecoder.decode(token);
+      expect(payload.scopes, equals(['a', 'b']));
+    });
+
+    test('returns empty list when neither claim is present', () {
+      final token = _createToken({'sub': 'user-1'});
+      final payload = JwtDecoder.decode(token);
+      expect(payload.scopes, isEmpty);
+    });
+
+    test('returns empty list for empty scope string', () {
+      final token = _createToken({'scope': ''});
+      final payload = JwtDecoder.decode(token);
+      expect(payload.scopes, isEmpty);
+    });
+
+    test('handles extra spaces in scope string', () {
+      final token = _createToken({'scope': 'openid  profile   email'});
+      final payload = JwtDecoder.decode(token);
+      expect(payload.scopes, equals(['openid', 'profile', 'email']));
+    });
+  });
 }
